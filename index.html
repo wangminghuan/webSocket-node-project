@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>搭建webSocket-Io服务</title>
+  <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width">
+  <link href="./style.css" rel="stylesheet">
+  <script src="./socket.io.js"></script>
+</head>
+
+<body>
+  <div class="wrap">
+    <div id="content">
+    </div>
+  </div>
+  <div class="bttom">
+    <input type="text" id="input">
+    <button class="el-button el-button--primary el-button--large" type="button" id="submit"><span>发送消息</span></button>
+  </div>
+  <script>
+    var socket = io();
+    var $input = document.getElementById("input");
+    var $send = document.getElementById("submit");
+    var $body = document.getElementById("content");
+    function createMsg(msg,className) {
+      var node = document.createElement("P");
+      node.className=className;
+      var nodeText=document.createTextNode(msg);
+      node.appendChild(nodeText);
+      $body.appendChild(node);
+    }
+    socket.on('message', function (obj) {
+      var msg = obj.msg;
+      createMsg(msg,"admin")
+    });
+    function addEvent(element,type,handler){
+      if (element.addEventListener) {
+            //冒泡阶段处理事件
+            element.addEventListener(type, handler, false)
+        } else if (element.attachEvent) {
+            //IE只有冒泡
+            element.attachEvent("on" + type, handler)
+        } else {
+            element["on" + type] = handler;
+        }
+    }
+    addEvent($send,"click", function () {
+      var msg = $input.value;
+      createMsg("你细声说：" + msg,"user")
+      socket.emit('message', msg);
+      $input.value = "";
+
+    })
+  </script>
+</body>
+
+</html>
